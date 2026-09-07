@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Recruitments - Jodhana E-Mitra & Accountacy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="firebase-init.js"></script>
+</head>
+  <body class="recruitments-page">
+    <!-- Navbar -->
+    <nav class="navbar scrolled">
+      <div class="container nav-container">
+        <a href="index.html" class="logo">
+          <img src="logo.png" alt="Jodhana E-Mitra Logo" class="nav-logo-img">
+          <div class="logo-text-wrapper">
+            <span class="logo-text">Jodhana</span>
+            <span class="logo-subtext">E-Mitra & Accountacy</span>
+          </div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html">Dashboard (डैशबोर्ड)</a></li>
+          <li><a href="services.html">Services (सुविधाएं)</a></li>
+          <li><a href="recruitments.html" class="active">Recruitments (भर्तियां)</a></li>
+          <li><a href="index.html#inquiry">Inquiry (पूछताछ)</a></li>
+          <li id="authNavLi"></li>
+        </ul>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="container">
+        <h1>Latest Recruitments (नवीनतम भर्तियां)</h1>
+        <p>Stay updated with the latest government and private job openings. Click 'Inquire Now' to apply through us.</p>
+      </div>
+    </div>
+
+    <!-- Recruitments Section -->
+    <section id="recruitments" class="section pt-0">
+      <div class="container">
+        
+        <!-- Updates (Sarkari Layout) Section -->
+        <div class="section-header" style="margin-bottom: 30px;">
+          <h2>Latest Updates (सभी अपडेट)</h2>
+        </div>
+        <div class="sarkari-grid" style="margin-bottom: 60px;">
+          
+          <!-- Column 1: Result -->
+          <div class="sarkari-col">
+            <div class="sarkari-header">Result</div>
+            <ul class="sarkari-list">
+              <li><a href="#">UP ECCE Educator Pratapgarh Result 2026</a></li>
+              <li><a href="#">UPSSSC Assistant Accountant, Auditor 2024 Result 2026</a></li>
+              <li><a href="#">UPSC CPF Assistant Commandant CAPF 2025 Final Marks</a></li>
+              <li><a href="#">CBSE Board Class 12th Supplementary Result 2026</a></li>
+              <li><a href="#">Bihar Vidhan Parishad Sachivalaya LDC Result 2026</a></li>
+            </ul>
+          </div>
+
+          <!-- Column 2: Admit Card -->
+          <div class="sarkari-col">
+            <div class="sarkari-header">Admit Card</div>
+            <ul class="sarkari-list">
+              <li><a href="#">BHU School Teacher TGT, PGT Admit Card 2026</a></li>
+              <li><a href="#">NTA AIAPGET Admissions Exam City 2026</a></li>
+              <li><a href="#">SBI Assistant Manager Law Admit Card 2026</a></li>
+              <li><a href="#">UPSC CDS II Exam Schedule 2026</a></li>
+              <li><a href="#">UPSC NDA II Exam Schedule 2026</a></li>
+            </ul>
+          </div>
+
+          <div class="sarkari-col">
+            <div class="sarkari-header">Latest Job</div>
+            <ul class="sarkari-list" id="sarkariLatestJobList">
+              <!-- Dynamically populated by main.js from localStorage -->
+            </ul>
+          </div>
+
+        </div>
+
+        <div class="section-header" style="margin-bottom: 30px; margin-top: 20px;">
+          <h2>Detailed Job Updates (विस्तृत जानकारी)</h2>
+        </div>
+        
+        <!-- Tab Buttons -->
+        <div class="service-tabs recruitments-tabs" style="margin-bottom: 30px;">
+          <button class="tab-btn tab-color-1 active" data-tab="latest-job">
+            <span class="tab-icon">💼</span> Latest Job
+          </button>
+          <button class="tab-btn tab-color-2" data-tab="admit-card">
+            <span class="tab-icon">🎫</span> Admit Card
+          </button>
+          <button class="tab-btn tab-color-3" data-tab="results">
+            <span class="tab-icon">🏆</span> Results
+          </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content-container">
+          
+          <!-- Latest Job Content -->
+          <div class="tab-content active" id="latest-job">
+            <div class="recruitments-grid" id="recruitmentsGrid">
+              <!-- Dynamically populated by main.js from localStorage -->
+            </div>
+          </div>
+
+          <!-- Admit Card Content -->
+          <div class="tab-content" id="admit-card">
+            <div class="recruitments-grid">
+              <div class="card job-card">
+                <span class="job-badge">Admit Card</span>
+                <h3>UPSC CDS II Admit Card</h3>
+                <ul class="job-details">
+                  <li><strong>Exam Date:</strong> 01 Sept 2026</li>
+                  <li><strong>Status:</strong> Available</li>
+                </ul>
+                <a href="job-details.html" class="btn btn-outline btn-small" target="_blank">Show</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- Results Content -->
+          <div class="tab-content" id="results">
+            <div class="recruitments-grid">
+              <div class="card job-card">
+                <span class="job-badge">Result</span>
+                <h3>CBSE Class 12th Supp. Result</h3>
+                <ul class="job-details">
+                  <li><strong>Declared On:</strong> 10 Aug 2026</li>
+                  <li><strong>Status:</strong> Live</li>
+                </ul>
+                <a href="job-details.html" class="btn btn-outline btn-small" target="_blank">Show</a>
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+          <a href="jobs.html" class="btn btn-primary">View All Updates (सभी अपडेट देखें)</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <!-- Top Info Boxes -->
+        <div class="footer-top">
+          <div class="footer-info-row">
+            <div class="footer-info-box">
+              <div class="footer-icon">✉️</div>
+              <div class="footer-info-text">
+                <h4>Email Us</h4>
+                <p>xx@xx.com</p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">❓</div>
+              <div class="footer-info-text">
+                <h4>Have Questions?</h4>
+                <p><a href="index.html#inquiry" style="color:#cbd5e1;text-decoration:none;">Contact Us</a></p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">📞</div>
+              <div class="footer-info-text">
+                <h4>Call Us</h4>
+                <p>+91-9799867629</p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">🕒</div>
+              <div class="footer-info-text">
+                <h4>Opening Hours</h4>
+                <p>Mon-Sat: 10AM - 6PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Widgets -->
+        <div class="footer-widgets">
+          <!-- Col 1 -->
+          <div class="footer-col">
+            <img src="logo.png" alt="Jodhana E-Mitra Logo" class="footer-logo-img">
+            <p>We are a leading Service Provider in e-Governance, E-Mitra, Digital Certificates, and Online Forms across Rajasthan.</p>
+            <div class="emitra-logo-box">
+              <span style="color:#dc2626; font-size:1.5rem; font-weight:900;">ई</span>
+              <div>
+                <div>ई-मित्र</div>
+                <span class="hindi">मेरा हक़, सेवाएँ अनेक</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2 -->
+          <div class="footer-col">
+            <h3>Services</h3>
+            <ul class="footer-links">
+              <li><a href="services.html">Digital Certificates <i>></i></a></li>
+              <li><a href="services.html">Aadhar Card Services <i>></i></a></li>
+              <li><a href="services.html">PAN Card Services <i>></i></a></li>
+              <li><a href="services.html">Accountancy <i>></i></a></li>
+              <li><a href="services.html">Online Form Filling <i>></i></a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3 -->
+          <div class="footer-col">
+            <h3>Downloads & Links</h3>
+            <ul class="footer-links">
+              <li><a href="forms.html">E-Mitra Services Forms <i>></i></a></li>
+              <li><a href="recruitments.html">Latest Recruitments <i>></i></a></li>
+              <li><a href="jobs.html">All Job Updates <i>></i></a></li>
+              <li><a href="index.html#dashboard">Dashboard <i>></i></a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4 -->
+          <div class="footer-col">
+            <h3>Contact Info</h3>
+            <ul class="footer-contact-list">
+              <li>
+                <i class="c-icon">📍</i>
+                <span>Sagariya, Jodhpur<br>Rajasthan 342013</span>
+              </li>
+              <li>
+                <i class="c-icon">✉️</i>
+                <a href="mailto:xx@xx.com">xx@xx.com</a>
+              </li>
+              <li>
+                <i class="c-icon">📞</i>
+                <a href="tel:+919799867629">+91 9799867629</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="container">
+          <p>Copyright &copy; 2026. <span class="brand-color">Jodhana E-Mitra & Accountacy</span> | All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
