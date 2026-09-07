@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>User Dashboard | Jodhana E-Mitra</title>
+  <link rel="stylesheet" href="/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    .dashboard-container {
+      padding: 40px;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .user-header {
+      background: var(--white);
+      padding: 20px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 30px;
+    }
+    .dashboard-card {
+      background: var(--white);
+      padding: 25px;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-sm);
+    }
+    .doc-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 30px;
+      perspective: 1000px;
+    }
+    .doc-item {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .doc-item:hover {
+      transform: rotateY(15deg) rotateX(5deg) translateY(-10px);
+      box-shadow: -15px 20px 30px rgba(0,0,0,0.2);
+    }
+    .doc-cover {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      border-radius: 12px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      overflow: hidden;
+    }
+    .doc-cover img {
+      max-width: 100%;
+      max-height: 120px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .doc-cover i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .doc-cover strong {
+      font-size: 1.1rem;
+      margin-bottom: 5px;
+      word-break: break-all;
+    }
+    .doc-cover small {
+      font-size: 0.8rem;
+      opacity: 0.8;
+    }
+    .doc-actions {
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s;
+      z-index: 10;
+    }
+    .doc-item:hover .doc-actions {
+      opacity: 1;
+      bottom: 10px;
+    }
+    .doc-actions a, .doc-actions button {
+      background: var(--white);
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 20px;
+      border: none;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .doc-actions a:hover {
+      background: var(--primary-color);
+      color: white;
+    }
+    .doc-actions button {
+      background: #ef4444;
+      color: white;
+    }
+    .doc-actions button:hover {
+      background: #dc2626;
+    }
+    .album-binding {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 15px;
+      background: linear-gradient(to right, #0f172a, #1e293b, #0f172a);
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+      z-index: 5;
+      box-shadow: inset -2px 0 5px rgba(0,0,0,0.5);
+    }
+    .inquiry-list {
+      margin-top: 20px;
+    }
+    .inquiry-item {
+      padding: 15px;
+      border-left: 4px solid var(--secondary-color);
+      background: #f8fafc;
+      margin-bottom: 15px;
+      border-radius: 4px;
+    }
+    .inquiry-item h4 {
+      margin-bottom: 5px;
+      color: var(--primary-color);
+    }
+    .inquiry-item small {
+      color: #64748b;
+    }
+  </style>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="/firebase-init.js"></script>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar scrolled">
+    <div class="container nav-container">
+      <a href="index.html" class="logo">
+        <img src="/logo.png" alt="Jodhana E-Mitra Logo" class="nav-logo-img">
+        <div class="logo-text-wrapper">
+          <span class="logo-text">Jodhana</span>
+          <span class="logo-subtext">E-Mitra & Accountacy</span>
+        </div>
+      </a>
+      <ul class="nav-links">
+        <li><a href="index.html">Dashboard (डैशबोर्ड)</a></li>
+        <li><a href="services.html">Services (सुविधाएं)</a></li>
+        <li><a href="recruitments.html">Recruitments (भर्तियां)</a></li>
+        <li><a href="index.html#inquiry">Inquiry (पूछताछ)</a></li>
+        <li id="authNavLi"></li>
+      </ul>
+      <button class="mobile-menu-btn" aria-label="Toggle menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Dashboard Content -->
+  <section class="section" style="padding-top: 150px; min-height: 80vh; background-color: #f1f5f9;">
+    <div class="dashboard-container">
+      
+      <div class="user-header">
+        <div>
+          <h2 id="userNameDisplay">Welcome, User</h2>
+          <p id="userEmailDisplay" style="color: #64748b;">user@example.com</p>
+        </div>
+        <button class="btn btn-primary" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="grid-2">
+        <!-- Document Album -->
+        <div class="dashboard-card">
+          <h3 style="border-bottom: 2px solid var(--secondary-color); padding-bottom: 10px; margin-bottom: 20px;">My Document Album</h3>
+          <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Upload your Aadhar, PAN, Marksheets etc. (Max 1MB per file)</p>
+          
+          <form id="docUploadForm" style="display: flex; gap: 10px; align-items: center; margin-bottom: 20px;">
+            <input type="text" id="docName" placeholder="Document Name (e.g. Aadhar)" required style="padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1;">
+            <input type="file" id="docFile" required style="flex: 1;" accept="image/*,application/pdf">
+            <button type="submit" class="btn btn-secondary">Upload</button>
+          </form>
+
+          <p id="uploadError" style="color: red; display: none; font-size: 0.9rem;"></p>
+
+          <ul class="doc-list" id="documentList">
+            <!-- Documents rendered here -->
+          </ul>
+        </div>
+
+        <!-- My Inquiries -->
+        <div class="dashboard-card">
+          <h3 style="border-bottom: 2px solid var(--primary-color); padding-bottom: 10px; margin-bottom: 20px;">My Inquiries & Forms</h3>
+          <p style="font-size: 0.9rem; color: #64748b; margin-bottom: 15px;">Here is a history of the inquiries you have submitted.</p>
+          
+          <div class="inquiry-list" id="inquiryList">
+            <!-- Inquiries rendered here -->
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-bottom">
+      <p>&copy; 2026 Jodhana E-Mitra & Accountancy. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // --- Auth Check ---
+    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    if (!currentUser) {
+      window.location.href = 'login.html';
+    }
+
+    // --- Header setup ---
+    document.getElementById('userNameDisplay').textContent = `Welcome, ${currentUser.name}`;
+    document.getElementById('userEmailDisplay').textContent = currentUser.email;
+
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+      e.preventDefault();
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
+    });
+
+    // --- Documents Logic ---
+    const documentList = document.getElementById('documentList');
+    const docUploadForm = document.getElementById('docUploadForm');
+    const uploadError = document.getElementById('uploadError');
+
+    const renderDocs = async () => {
+      documentList.innerHTML = '<p style="color:#666; text-align:center;">Loading documents...</p>';
+      try {
+        const snapshot = await db.collection('documents').where('email', '==', currentUser.email).get();
+        documentList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          documentList.innerHTML = '<p style="color:#666; text-align:center;">No documents uploaded yet.</p>';
+          return;
+        }
+
+        snapshot.forEach(docSnap => {
+          const doc = docSnap.data();
+          const docId = docSnap.id;
+          const li = document.createElement('li');
+          li.className = 'doc-item';
+          
+          let thumbnailHtml = '';
+          if (doc.type && doc.type.startsWith('image')) {
+            thumbnailHtml = `<img src="${doc.url}" alt="${doc.name}">`;
+          } else {
+            thumbnailHtml = `<i class="fa-solid fa-file-pdf" style="font-size: 4rem; color: #facc15;"></i>`;
+          }
+
+          li.innerHTML = `
+            <div class="album-binding"></div>
+            <div class="doc-cover">
+              ${thumbnailHtml}
+              <strong>${doc.name}</strong>
+              <small>${doc.date}</small>
+            </div>
+            <div class="doc-actions">
+              <a href="${doc.url}" target="_blank">View / Download</a>
+              <button onclick="deleteDoc('${docId}', '${doc.fileName}')">✖ Delete</button>
+            </div>
+          `;
+          documentList.appendChild(li);
+        });
+      } catch (err) {
+        documentList.innerHTML = '<p style="color:red; text-align:center;">Error loading documents.</p>';
+        console.error(err);
+      }
+    };
+
+    window.deleteDoc = async (docId, fileName) => {
+      if(confirm('Are you sure you want to delete this document?')) {
+        try {
+          // Delete from Firestore
+          await db.collection('documents').doc(docId).delete();
+          // Delete from Storage
+          const fileRef = storage.ref(`documents/${currentUser.email}/${fileName}`);
+          await fileRef.delete();
+          renderDocs();
+        } catch(err) {
+          console.error(err);
+          alert("Error deleting document");
+        }
+      }
+    };
+
+    docUploadForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      uploadError.style.display = 'none';
+      const fileInput = document.getElementById('docFile');
+      const file = fileInput.files[0];
+      const name = document.getElementById('docName').value;
+
+      if (!file) return;
+
+      const submitBtn = docUploadForm.querySelector('button[type="submit"]');
+      submitBtn.textContent = 'Uploading...';
+      submitBtn.disabled = true;
+
+      try {
+        // Upload to Firebase Storage
+        const fileRef = storage.ref(`documents/${currentUser.email}/${file.name}`);
+        const snapshot = await fileRef.put(file);
+        const downloadURL = await snapshot.ref.getDownloadURL();
+
+        // Save reference to Firestore
+        await db.collection('documents').add({
+          email: currentUser.email,
+          name: name,
+          fileName: file.name,
+          url: downloadURL,
+          type: file.type,
+          date: new Date().toLocaleDateString(),
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+
+        docUploadForm.reset();
+        renderDocs();
+      } catch (err) {
+        uploadError.textContent = "Error uploading file: " + err.message;
+        uploadError.style.display = 'block';
+      } finally {
+        submitBtn.textContent = 'Upload Document';
+        submitBtn.disabled = false;
+      }
+    });
+
+    // --- Inquiries Logic ---
+    const inquiryList = document.getElementById('inquiryList');
+    
+    const renderInquiries = async () => {
+      inquiryList.innerHTML = '<p style="color:#666; text-align:center;">Loading inquiries...</p>';
+      try {
+        const snapshot = await db.collection('inquiries').where('email', '==', currentUser.email).get();
+        inquiryList.innerHTML = '';
+        
+        if (snapshot.empty) {
+          inquiryList.innerHTML = '<p style="color:#666; text-align:center;">You have not submitted any inquiries yet.</p>';
+          return;
+        }
+
+        snapshot.forEach(docSnap => {
+          const inq = docSnap.data();
+          const div = document.createElement('div');
+          div.className = 'inquiry-item';
+          div.innerHTML = `
+            <h4>${inq.subject}</h4>
+            <p style="margin-bottom: 5px; font-size: 0.95rem;">${inq.message}</p>
+            <small>Submitted on: ${inq.date}</small>
+          `;
+          inquiryList.appendChild(div);
+        });
+      } catch (err) {
+        inquiryList.innerHTML = '<p style="color:red; text-align:center;">Error loading inquiries.</p>';
+        console.error(err);
+      }
+    };
+
+    // Initial Renders
+    renderDocs();
+    renderInquiries();
+  </script>
+    
+  <script src="/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Services - Jodhana E-Mitra & Accountacy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="/firebase-init.js"></script>
+</head>
+  <body class="services-page">
+    <!-- Navbar -->
+    <nav class="navbar scrolled">
+      <div class="container nav-container">
+        <a href="index.html" class="logo">
+          <img src="/logo.png" alt="Jodhana E-Mitra Logo" class="nav-logo-img">
+          <div class="logo-text-wrapper">
+            <span class="logo-text">Jodhana</span>
+            <span class="logo-subtext">E-Mitra & Accountacy</span>
+          </div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="index.html#dashboard">Dashboard (डैशबोर्ड)</a></li>
+          <li><a href="#">Services (सुविधाएं)</a></li>
+          <li><a href="recruitments.html">Recruitments (भर्तियां)</a></li>
+          <li><a href="index.html#inquiry">Inquiry (पूछताछ)</a></li>
+          <li id="authNavLi"></li>
+        </ul>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Page Header -->
+    <div class="page-header">
+      <div class="container">
+        <h1>Our Services (सुविधाएं)</h1>
+        <p>Explore our wide range of digital and financial services. Click on any service to see the required documents.</p>
+      </div>
+    </div>
+
+    <!-- Services Section -->
+    <section id="services" class="section pt-0">
+      <div class="container">
+        
+        <!-- Tab Buttons -->
+        <div class="service-tabs">
+          <button class="tab-btn tab-color-1 active" data-tab="form-filling">
+            <span class="tab-icon">📄</span> Form Filling
+          </button>
+          <button class="tab-btn tab-color-2" data-tab="aadhar-pan">
+            <span class="tab-icon">💳</span> Aadhar & PAN
+          </button>
+          <button class="tab-btn tab-color-3" data-tab="accountancy">
+            <span class="tab-icon">📈</span> Accountancy
+          </button>
+          <button class="tab-btn tab-color-4" data-tab="certificates">
+            <span class="tab-icon">📜</span> Certificates
+          </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="tab-content-container card">
+          
+          <!-- Form Filling Content -->
+          <div class="tab-content active" id="form-filling">
+            <div class="tab-content-inner">
+              <div class="tab-header">
+                <h3>Form Filling Services</h3>
+                <p>Online application forms for various government schemes and examinations.</p>
+              </div>
+              <ul class="service-list interactive-list">
+                <li data-service="Government Job Form"><span class="check-icon">✓</span> Government Job Application Forms</li>
+                <li data-service="Admission Form"><span class="check-icon">✓</span> College/University Admission Forms</li>
+                <li data-service="Scholarship Form"><span class="check-icon">✓</span> Scholarship Application Forms</li>
+                <li data-service="Passport Application"><span class="check-icon">✓</span> Passport Application & Renewal</li>
+                <li data-service="PM Kisan Yojana"><span class="check-icon">✓</span> PM Kisan Samman Nidhi Yojana</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Aadhar & PAN Content -->
+          <div class="tab-content" id="aadhar-pan">
+            <div class="tab-content-inner">
+              <div class="tab-header">
+                <h3>Aadhar & PAN Services</h3>
+                <p>New applications, corrections, and printouts for Aadhar and PAN cards.</p>
+              </div>
+              <ul class="service-list interactive-list">
+                <li data-service="New PAN Card"><span class="check-icon">✓</span> New PAN Card Application</li>
+                <li data-service="PAN Correction"><span class="check-icon">✓</span> PAN Card Correction / Update</li>
+                <li data-service="Aadhar Print"><span class="check-icon">✓</span> Aadhar Card Print (Color/PVC)</li>
+                <li data-service="Aadhar Update"><span class="check-icon">✓</span> Aadhar Card Address/Name Update Guidance</li>
+                <li data-service="Aadhar PAN Link"><span class="check-icon">✓</span> Aadhar - PAN Linking</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Accountancy Content -->
+          <div class="tab-content" id="accountancy">
+            <div class="tab-content-inner">
+              <div class="tab-header">
+                <h3>Accountancy & Tax</h3>
+                <p>Professional accounting services, GST filing, and tax consultancy for your business.</p>
+              </div>
+              <ul class="service-list interactive-list">
+                <li data-service="GST Registration"><span class="check-icon">✓</span> GST Registration & Monthly Return Filing</li>
+                <li data-service="ITR Filing"><span class="check-icon">✓</span> Income Tax Return (ITR) Filing</li>
+                <li data-service="MSME Registration"><span class="check-icon">✓</span> MSME / Udyam Registration</li>
+                <li data-service="Balance Sheet"><span class="check-icon">✓</span> Balance Sheet & P&L Preparation</li>
+                <li data-service="Accounting Consult"><span class="check-icon">✓</span> Bookkeeping & Accounting Consultations</li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Certificates Content -->
+          <div class="tab-content" id="certificates">
+            <div class="tab-content-inner">
+              <div class="tab-header">
+                <h3>Digital Certificates</h3>
+                <p>Caste, Domicile, Income, and other digital certificates processing.</p>
+              </div>
+              <ul class="service-list interactive-list">
+                <li data-service="Caste Certificate"><span class="check-icon">✓</span> Caste Certificate (OBC/SC/ST/EWS)</li>
+                <li data-service="Domicile Certificate"><span class="check-icon">✓</span> Bonafide / Domicile Certificate (मूल निवास)</li>
+                <li data-service="Income Certificate"><span class="check-icon">✓</span> Income Certificate (आय प्रमाण पत्र)</li>
+                <li data-service="PCC Certificate"><span class="check-icon">✓</span> Police Clearance Certificate (PCC)</li>
+                <li data-service="Minority Certificate"><span class="check-icon">✓</span> Minority Certificate</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Document Modal -->
+    <div id="documentModal" class="modal-overlay hidden">
+      <div class="modal-content">
+        <button class="modal-close-btn">&times;</button>
+        <h3 id="modalServiceName">Service Name</h3>
+        <p class="modal-subtitle">Required Documents (आवश्यक दस्तावेज़):</p>
+        <ul id="modalDocList" class="doc-list">
+          <!-- Documents will be injected here via JS -->
+        </ul>
+        <div class="modal-footer">
+          <a href="#" id="modalApplyBtn" class="btn btn-primary btn-block">Apply Now (संपर्क करें)</a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <!-- Top Info Boxes -->
+        <div class="footer-top">
+          <div class="footer-info-row">
+            <div class="footer-info-box">
+              <div class="footer-icon">✉️</div>
+              <div class="footer-info-text">
+                <h4>Email Us</h4>
+                <p>xx@xx.com</p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">❓</div>
+              <div class="footer-info-text">
+                <h4>Have Questions?</h4>
+                <p><a href="index.html#inquiry" style="color:#cbd5e1;text-decoration:none;">Contact Us</a></p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">📞</div>
+              <div class="footer-info-text">
+                <h4>Call Us</h4>
+                <p>+91-9799867629</p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">🕒</div>
+              <div class="footer-info-text">
+                <h4>Opening Hours</h4>
+                <p>Mon-Sat: 10AM - 6PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Widgets -->
+        <div class="footer-widgets">
+          <!-- Col 1 -->
+          <div class="footer-col">
+            <img src="/logo.png" alt="Jodhana E-Mitra Logo" class="footer-logo-img">
+            <p>We are a leading Service Provider in e-Governance, E-Mitra, Digital Certificates, and Online Forms across Rajasthan.</p>
+            <div class="emitra-logo-box">
+              <span style="color:#dc2626; font-size:1.5rem; font-weight:900;">ई</span>
+              <div>
+                <div>ई-मित्र</div>
+                <span class="hindi">मेरा हक़, सेवाएँ अनेक</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2 -->
+          <div class="footer-col">
+            <h3>Services</h3>
+            <ul class="footer-links">
+              <li><a href="services.html">Digital Certificates <i>></i></a></li>
+              <li><a href="services.html">Aadhar Card Services <i>></i></a></li>
+              <li><a href="services.html">PAN Card Services <i>></i></a></li>
+              <li><a href="services.html">Accountancy <i>></i></a></li>
+              <li><a href="services.html">Online Form Filling <i>></i></a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3 -->
+          <div class="footer-col">
+            <h3>Downloads & Links</h3>
+            <ul class="footer-links">
+              <li><a href="forms.html">E-Mitra Services Forms <i>></i></a></li>
+              <li><a href="recruitments.html">Latest Recruitments <i>></i></a></li>
+              <li><a href="jobs.html">All Job Updates <i>></i></a></li>
+              <li><a href="index.html#dashboard">Dashboard <i>></i></a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4 -->
+          <div class="footer-col">
+            <h3>Contact Info</h3>
+            <ul class="footer-contact-list">
+              <li>
+                <i class="c-icon">📍</i>
+                <span>Sagariya, Jodhpur<br>Rajasthan 342013</span>
+              </li>
+              <li>
+                <i class="c-icon">✉️</i>
+                <a href="mailto:xx@xx.com">xx@xx.com</a>
+              </li>
+              <li>
+                <i class="c-icon">📞</i>
+                <a href="tel:+919799867629">+91 9799867629</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="container">
+          <p>Copyright &copy; 2026. <span class="brand-color">Jodhana E-Mitra & Accountacy</span> | All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <script src="./main.js"></script>
+  </body>
+</html>

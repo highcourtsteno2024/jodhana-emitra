@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Panel - Jodhana E-Mitra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="/admin.css">
+  <style>
+    /* 3D Document Album Styles for Admin Panel */
+    .doc-list {
+      list-style: none;
+      padding: 0;
+      margin-top: 30px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 30px;
+      perspective: 1000px;
+    }
+    .doc-item {
+      position: relative;
+      width: 100%;
+      height: 250px;
+      transform-style: preserve-3d;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.6s;
+      border-radius: 12px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+    }
+    .doc-item:hover {
+      transform: rotateY(15deg) rotateX(5deg) translateY(-10px);
+      box-shadow: -15px 20px 30px rgba(0,0,0,0.2);
+    }
+    .doc-cover {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #1e3a8a, #3b82f6);
+      border-radius: 12px;
+      backface-visibility: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      text-align: center;
+      padding: 20px;
+      border: 1px solid rgba(255,255,255,0.2);
+      overflow: hidden;
+    }
+    .doc-cover img {
+      max-width: 100%;
+      max-height: 120px;
+      object-fit: contain;
+      margin-bottom: 15px;
+      border-radius: 4px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    }
+    .doc-cover i {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    .doc-actions {
+      position: absolute;
+      bottom: -15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      opacity: 0;
+      transition: opacity 0.3s, bottom 0.3s;
+      z-index: 10;
+    }
+    .doc-item:hover .doc-actions {
+      opacity: 1;
+      bottom: 10px;
+    }
+    .doc-actions a {
+      background: white;
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .album-binding {
+      position: absolute;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 15px;
+      background: linear-gradient(to right, #0f172a, #1e293b, #0f172a);
+      border-top-left-radius: 12px;
+      border-bottom-left-radius: 12px;
+      z-index: 5;
+    }
+
+    /* Modal Styles */
+    .admin-modal {
+      display: none; 
+      position: fixed; 
+      z-index: 1000; 
+      left: 0; 
+      top: 0; 
+      width: 100%; 
+      height: 100%; 
+      background-color: rgba(0,0,0,0.5);
+    }
+    .admin-modal-content {
+      background-color: #f8fafc;
+      margin: 5% auto;
+      padding: 30px;
+      border-radius: 8px;
+      width: 80%;
+      max-width: 900px;
+      max-height: 80vh;
+      overflow-y: auto;
+      position: relative;
+    }
+    .admin-modal-close {
+      position: absolute;
+      top: 15px;
+      right: 25px;
+      color: #aaa;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .admin-modal-close:hover {
+      color: #333;
+    }
+  </style>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="/firebase-init.js"></script>
+</head>
+<body>
+  
+  <div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h2>Admin Panel</h2>
+        <p>Jodhana E-Mitra</p>
+      </div>
+      <ul class="nav-menu">
+        <li class="active" data-target="dashboard">Dashboard</li>
+        <li data-target="popup-mgmt">Popup Settings</li>
+        <li data-target="slider-mgmt">Hero Slider</li>
+        <li data-target="jobs-mgmt">Recruitments</li>
+        <li data-target="forms-mgmt">Forms Management</li>
+        <li data-target="users-mgmt">Users & Docs</li>
+        <li data-target="inquiries-mgmt">Inquiries</li>
+        <li><a href="index.html" style="color:white; text-decoration:none;">&larr; Back to Site</a></li>
+      </ul>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      
+      <!-- Dashboard Section -->
+      <section id="dashboard" class="content-section active">
+        <h1>Dashboard</h1>
+        <p>Welcome to the Jodhana E-Mitra Admin Panel.</p>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <h3>Total Users</h3>
+            <p id="totalUsers">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Total Inquiries</h3>
+            <p id="totalInquiries">0</p>
+          </div>
+          <div class="stat-card">
+            <h3>Active Jobs</h3>
+            <p id="totalJobs">0</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Popup Management -->
+      <section id="popup-mgmt" class="content-section">
+        <h1>Welcome Popup Settings</h1>
+        <div class="form-card">
+          <form id="popupForm">
+            <div class="form-group">
+              <label>Enable Popup?</label>
+              <select id="popupEnabled">
+                <option value="true">Yes, Show Popup</option>
+                <option value="false">No, Hide Popup</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Popup Image (Upload .jpg / .png)</label>
+              <input type="file" id="popupImageFile" accept="image/*">
+              <input type="hidden" id="popupImage" required>
+              <img id="popupImagePreview" src="" style="max-width: 150px; display: none; margin-top: 10px; border-radius: 4px; border: 1px solid #ccc;">
+            </div>
+            <button type="submit" class="btn btn-primary">Save Popup Settings</button>
+          </form>
+        </div>
+      </section>
+
+      <!-- Slider Management -->
+      <section id="slider-mgmt" class="content-section">
+        <h1>Hero Slider Settings</h1>
+        <div class="form-card">
+          <h3>Add New Slide</h3>
+          <form id="addSlideForm">
+            <div class="form-group">
+              <label>Slide Image (Upload .jpg / .png)</label>
+              <input type="file" id="slideImageFile" accept="image/*">
+              <input type="hidden" id="slideImage" required>
+            </div>
+            <div class="form-group">
+              <label>Badge Text (e.g. Trusted by Thousands)</label>
+              <input type="text" id="slideBadge">
+            </div>
+            <div class="form-group">
+              <label>Heading (HTML allowed, e.g. Your &lt;span class="highlight"&gt;Trusted&lt;/span&gt; Partner)</label>
+              <input type="text" id="slideHeading" required>
+            </div>
+            <div class="form-group">
+              <label>Subheading / Description</label>
+              <textarea id="slideDesc" rows="2"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Slide</button>
+          </form>
+        </div>
+        
+        <h3>Current Slides</h3>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Image</th>
+                <th>Heading</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="slidesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Jobs Management -->
+      <section id="jobs-mgmt" class="content-section">
+        <h1>Recruitments & Job Updates</h1>
+        
+        <div class="form-card">
+          <h3>Add New Job (Detailed)</h3>
+          <form id="addJobForm">
+            
+            <h4 style="margin-top: 15px; margin-bottom: 5px; color: var(--secondary-color);">Basic Details</h4>
+            <div class="form-group">
+              <label>Job Title</label>
+              <input type="text" id="jobTitle" required placeholder="e.g. NICL Assistant Recruitment 2026">
+            </div>
+            <div class="form-group">
+              <label>Department / Company Full Name</label>
+              <input type="text" id="jobDept" required placeholder="e.g. National Insurance Company Limited (NICL)">
+            </div>
+            <div class="form-group">
+              <label>Short Details of Notification</label>
+              <input type="text" id="jobShortDetails" placeholder="e.g. NICL Assistant Exam 2026 : Short Details of Notification">
+            </div>
+            <div class="form-group">
+              <label>Badge (Optional)</label>
+              <select id="jobBadge">
+                <option value="">None</option>
+                <option value="New">New</option>
+                <option value="Ending Soon">Ending Soon</option>
+                <option value="Admit Card">Admit Card</option>
+                <option value="Result">Result</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Total Posts</label>
+              <input type="text" id="jobPosts">
+            </div>
+            
+            <h4 style="margin-top: 25px; margin-bottom: 5px; color: var(--secondary-color);">Important Dates</h4>
+            <div class="form-group">
+              <label>Application Begin Date</label>
+              <input type="text" id="jobAppBegin" placeholder="e.g. 18/07/2026">
+            </div>
+            <div class="form-group">
+              <label>Last Date for Apply Online</label>
+              <input type="text" id="jobDate" placeholder="e.g. 07/08/2026" required>
+            </div>
+            <div class="form-group">
+              <label>Pay Fee Last Date</label>
+              <input type="text" id="jobFeeLastDate" placeholder="e.g. 07/08/2026">
+            </div>
+            <div class="form-group">
+              <label>Exam Date</label>
+              <input type="text" id="jobExamDate" placeholder="e.g. 27/08/2026">
+            </div>
+            
+            <h4 style="margin-top: 25px; margin-bottom: 5px; color: var(--secondary-color);">Application Fee</h4>
+            <div class="form-group">
+              <label>General / OBC / EWS Fee</label>
+              <input type="text" id="jobFeeGen" placeholder="e.g. 850/-">
+            </div>
+            <div class="form-group">
+              <label>SC / ST / PH Fee</label>
+              <input type="text" id="jobFeeSc" placeholder="e.g. 0/-">
+            </div>
+            
+            <h4 style="margin-top: 25px; margin-bottom: 5px; color: var(--secondary-color);">Age Limit</h4>
+            <div class="form-group">
+              <label>Age Limit as on (Date)</label>
+              <input type="text" id="jobAgeAsOn" placeholder="e.g. 01/07/2026">
+            </div>
+            <div class="form-group">
+              <label>Minimum Age</label>
+              <input type="text" id="jobAgeMin" placeholder="e.g. 21 Years">
+            </div>
+            <div class="form-group">
+              <label>Maximum Age</label>
+              <input type="text" id="jobAgeMax" placeholder="e.g. 30 Years">
+            </div>
+
+            <h4 style="margin-top: 25px; margin-bottom: 5px; color: var(--secondary-color);">Important Links</h4>
+            <div class="form-group">
+              <label>Apply Online URL</label>
+              <input type="text" id="jobLink" value="#">
+            </div>
+            <div class="form-group">
+              <label>Download Notification URL</label>
+              <input type="text" id="jobNotifLink" value="#">
+            </div>
+            <div class="form-group">
+              <label>Official Website URL</label>
+              <input type="text" id="jobOfficialLink" value="#">
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Add Job</button>
+          </form>
+        </div>
+        
+        <h3>Current Jobs</h3>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Department</th>
+                <th>Last Date</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="jobsTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Users & Docs Management -->
+      <section id="users-mgmt" class="content-section">
+        <h1>Registered Users & Documents</h1>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="usersTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Inquiries Management -->
+      <section id="inquiries-mgmt" class="content-section">
+        <h1>Customer Inquiries</h1>
+        <div class="table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Name</th>
+                <th>Phone</th>
+                <th>Subject</th>
+                <th>Message</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="inquiriesTableBody">
+              <!-- Dynamically populated -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Forms Management -->
+      <section id="forms-mgmt" class="content-section">
+        <h1>e-Mitra Services Forms</h1>
+        
+        <div class="form-card">
+          <h3>Add New Form</h3>
+          <form id="addFormForm">
+            <div class="form-group">
+              <label>Name of Form & Services</label>
+              <input type="text" id="formName" required placeholder="e.g. Bonafied Form 2026 pdf (मूल निवास प्रमाण पत्र)">
+            </div>
+            <div class="form-group">
+              <label>PDF URL (Google Drive, Website, etc.)</label>
+              <input type="text" id="formPdfUrl" placeholder="https://...">
+            </div>
+            <div class="form-group" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
+              <label>OR Upload PDF File</label>
+              <input type="file" id="formPdfFile" accept="application/pdf">
+              <input type="hidden" id="formPdfBase64">
+            </div>
+            <div class="form-group" style="border-top: 1px solid #e2e8f0; padding-top: 15px; margin-top: 15px;">
+              <label>Video URL (Optional YouTube link)</label>
+              <input type="text" id="formVideoUrl" placeholder="https://youtube.com/...">
+            </div>
+            <button type="submit" class="btn btn-primary" style="margin-top: 15px;">Add Form</button>
+          </form>
+        </div>
+        
+        <div class="table-container">
+          <h3>Available Forms</h3>
+          <p>Total Forms: <span id="totalForms">0</span></p>
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>S.N.</th>
+                <th>Name of Form & Services</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody id="formsTableBody">
+              <!-- Forms rendered here -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Admin Document Viewer Modal -->
+      <div id="adminDocModal" class="admin-modal">
+        <div class="admin-modal-content">
+          <span class="admin-modal-close" onclick="document.getElementById('adminDocModal').style.display='none'">&times;</span>
+          <h2 id="modalUserName" style="margin-bottom: 20px;">User's Documents</h2>
+          <ul class="doc-list" id="adminDocumentList">
+            <!-- Documents rendered here -->
+          </ul>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+    
+  <script src="/admin.js"></script>
+</body>
+</html>

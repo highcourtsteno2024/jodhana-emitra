@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="hi">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Jodhana E-Mitra & Accountacy</title>
+    <meta name="description" content="Jodhana E-Mitra & Accountacy Services. Online forms, job recruitments, accountancy and more." />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="./style.css" />
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+<script src="/firebase-init.js"></script>
+</head>
+  <body>
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="container nav-container">
+        <a href="#" class="logo">
+          <img src="/logo.png" alt="Jodhana E-Mitra Logo" class="nav-logo-img">
+          <div class="logo-text-wrapper">
+            <span class="logo-text">Jodhana</span>
+            <span class="logo-subtext">E-Mitra & Accountacy</span>
+          </div>
+        </a>
+        <ul class="nav-links">
+          <li><a href="#">Dashboard (डैशबोर्ड)</a></li>
+          <li><a href="services.html">Services (सुविधाएं)</a></li>
+          <li><a href="recruitments.html">Recruitments (भर्तियां)</a></li>
+          <li><a href="#inquiry">Inquiry (पूछताछ)</a></li>
+          <li id="authNavLi"></li>
+        </ul>
+        <button class="mobile-menu-btn" aria-label="Toggle menu">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Hero Slider Section -->
+    <section id="dashboard" class="hero-slider">
+      <div class="slides-container">
+        <!-- Slide 1 -->
+        <div class="slide active" style="background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)), url('slide1.jpg') center/cover;">
+          <div class="container hero-content">
+            <span class="badge">Trusted by Thousands</span>
+            <h1>Welcome to <br><span class="highlight">Jodhana E-Mitra & Accountacy</span></h1>
+            <p>Your one-stop solution for all E-Mitra services, accurate accountancy, and latest job updates.</p>
+            <div class="hero-buttons">
+              <a href="services.html" class="btn btn-primary">Explore Services</a>
+              <a href="#inquiry" class="btn btn-secondary">Contact Us</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slide 2 -->
+        <div class="slide" style="background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)), url('slide2.jpg') center/cover;">
+          <div class="container hero-content">
+            <span class="badge">Latest Job Updates</span>
+            <h1>Find Your Dream <span class="highlight">Sarkari Job</span></h1>
+            <p>Get instant updates on latest recruitments, admit cards, and results.</p>
+            <div class="hero-buttons">
+              <a href="recruitments.html" class="btn btn-primary">View Jobs</a>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Slide 3 -->
+        <div class="slide" style="background: linear-gradient(135deg, rgba(30,41,59,0.9), rgba(15,23,42,0.9)), url('slide3.jpg') center/cover;">
+          <div class="container hero-content">
+            <span class="badge">Professional Assistance</span>
+            <h1>Expert <span class="highlight">Accountancy Services</span></h1>
+            <p>Hassle-free ITR filing, GST registration, and accounting solutions.</p>
+            <div class="hero-buttons">
+              <a href="services.html" class="btn btn-primary">Learn More</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Slider Controls -->
+      <button class="slider-btn prev-btn" aria-label="Previous Slide">❮</button>
+      <button class="slider-btn next-btn" aria-label="Next Slide">❯</button>
+    </section>
+
+    <!-- Important Links / Forms Section -->
+    <section id="important-links" class="section" style="padding-top: 60px; padding-bottom: 60px; background-color: var(--bg-color);">
+      <div class="container">
+        <div class="section-header" style="margin-bottom: 40px;">
+          <h2>Important Links (महत्वपूर्ण लिंक)</h2>
+          <p>Download all essential application forms for E-Mitra services directly from here.</p>
+        </div>
+        
+        <div style="text-align: center;">
+          <a href="forms.html" class="btn btn-primary" style="font-size: 1.2rem; padding: 15px 40px; box-shadow: 0 10px 25px rgba(37, 99, 235, 0.3);">
+            📄 e-Mitra Services Form (डाउनलोड फॉर्म)
+          </a>
+        </div>
+
+        <div class="quick-services-row" style="margin-top: 40px; display: flex; justify-content: center; gap: 15px; flex-wrap: wrap;">
+          <a href="services.html" class="q-btn q-btn-blue">📄 FORM FILLING</a>
+          <a href="services.html" class="q-btn q-btn-pink">💳 AADHAR & PAN</a>
+          <a href="services.html" class="q-btn q-btn-orange">📈 ACCOUNTANCY</a>
+          <a href="services.html" class="q-btn q-btn-green">📜 CERTIFICATES</a>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Services section moved to services.html -->
+
+    <!-- Recruitments section moved to recruitments.html -->
+
+    <!-- Inquiry Section -->
+    <section id="inquiry" class="section inquiry">
+      <div class="container">
+        <div class="inquiry-wrapper">
+          <div class="inquiry-content">
+            <h2>Send an Inquiry (पूछताछ करें)</h2>
+            <p>Have questions about a specific job, or need help with a form? Send us a message and we will get back to you shortly.</p>
+            <div class="contact-info">
+              <p><strong>📍 Visit Us:</strong> Sagariya, Jodhpur 342013</p>
+              <p><strong>📞 Phone:</strong> +91-9799867629</p>
+              <p><strong>✉️ Email:</strong> xx@xx.com</p>
+            </div>
+          </div>
+          <div class="inquiry-form-container card">
+            <form id="inquiryForm" class="inquiry-form">
+              <div class="form-group">
+                <label for="name">Full Name</label>
+                <input type="text" id="name" name="name" required placeholder="Enter your name">
+              </div>
+              <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <input type="tel" id="phone" name="phone" required placeholder="Your contact number">
+              </div>
+              <div class="form-group">
+                <label for="subject">Subject / Job Title</label>
+                <input type="text" id="subject" name="subject" placeholder="What is this regarding?">
+              </div>
+              <div class="form-group">
+                <label for="message">Message</label>
+                <textarea id="message" name="message" rows="4" required placeholder="Type your query here..."></textarea>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Send Message</button>
+            </form>
+            <div id="formSuccess" class="form-success hidden">
+              <div class="success-icon">✓</div>
+              <h3>Message Sent!</h3>
+              <p>Thank you for reaching out. We will contact you soon.</p>
+              <button id="resetFormBtn" class="btn btn-outline btn-small">Send Another Message</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <!-- Top Info Boxes -->
+        <div class="footer-top">
+          <div class="footer-info-row">
+            <div class="footer-info-box">
+              <div class="footer-icon">✉️</div>
+              <div class="footer-info-text">
+                <h4>Email Us</h4>
+                <p>xx@xx.com</p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">❓</div>
+              <div class="footer-info-text">
+                <h4>Have Questions?</h4>
+                <p><a href="index.html#inquiry" style="color:#cbd5e1;text-decoration:none;">Contact Us</a></p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">📞</div>
+              <div class="footer-info-text">
+                <h4>Call Us</h4>
+                <p>+91-9799867629</p>
+              </div>
+            </div>
+            <div class="footer-info-box">
+              <div class="footer-icon">🕒</div>
+              <div class="footer-info-text">
+                <h4>Opening Hours</h4>
+                <p>Mon-Sat: 10AM - 6PM</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Widgets -->
+        <div class="footer-widgets">
+          <!-- Col 1 -->
+          <div class="footer-col">
+            <img src="/logo.png" alt="Jodhana E-Mitra Logo" class="footer-logo-img">
+            <p>We are a leading Service Provider in e-Governance, E-Mitra, Digital Certificates, and Online Forms across Rajasthan.</p>
+            <div class="emitra-logo-box">
+              <span style="color:#dc2626; font-size:1.5rem; font-weight:900;">ई</span>
+              <div>
+                <div>ई-मित्र</div>
+                <span class="hindi">मेरा हक़, सेवाएँ अनेक</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Col 2 -->
+          <div class="footer-col">
+            <h3>Services</h3>
+            <ul class="footer-links">
+              <li><a href="services.html">Digital Certificates <i>></i></a></li>
+              <li><a href="services.html">Aadhar Card Services <i>></i></a></li>
+              <li><a href="services.html">PAN Card Services <i>></i></a></li>
+              <li><a href="services.html">Accountancy <i>></i></a></li>
+              <li><a href="services.html">Online Form Filling <i>></i></a></li>
+            </ul>
+          </div>
+
+          <!-- Col 3 -->
+          <div class="footer-col">
+            <h3>Downloads & Links</h3>
+            <ul class="footer-links">
+              <li><a href="forms.html">E-Mitra Services Forms <i>></i></a></li>
+              <li><a href="recruitments.html">Latest Recruitments <i>></i></a></li>
+              <li><a href="jobs.html">All Job Updates <i>></i></a></li>
+              <li><a href="index.html#dashboard">Dashboard <i>></i></a></li>
+            </ul>
+          </div>
+
+          <!-- Col 4 -->
+          <div class="footer-col">
+            <h3>Contact Info</h3>
+            <ul class="footer-contact-list">
+              <li>
+                <i class="c-icon">📍</i>
+                <span>Sagariya, Jodhpur<br>Rajasthan 342013</span>
+              </li>
+              <li>
+                <i class="c-icon">✉️</i>
+                <a href="mailto:xx@xx.com">xx@xx.com</a>
+              </li>
+              <li>
+                <i class="c-icon">📞</i>
+                <a href="tel:+919799867629">+91 9799867629</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer Bottom -->
+      <div class="footer-bottom">
+        <div class="container">
+          <p>Copyright &copy; 2026. <span class="brand-color">Jodhana E-Mitra & Accountacy</span> | All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Popup Modal -->
+    <div id="welcomePopup" class="popup-overlay hidden">
+      <div class="popup-content">
+        <button class="popup-close" id="closePopupBtn">&times;</button>
+        <img src="popup-poster.jpg" alt="Important Announcement" class="popup-image">
+      </div>
+    </div>
+
+      
+  <script src="/main.js"></script>
+  </body>
+</html>
