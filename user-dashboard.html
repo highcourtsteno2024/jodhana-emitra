@@ -258,11 +258,7 @@
     document.getElementById('userNameDisplay').textContent = `Welcome, ${currentUser.name}`;
     document.getElementById('userEmailDisplay').textContent = currentUser.email;
 
-    document.getElementById('logoutBtn').addEventListener('click', (e) => {
-      e.preventDefault();
-      localStorage.removeItem('currentUser');
-      window.location.href = 'login.html';
-    });
+
 
     // --- Documents Logic ---
     const documentList = document.getElementById('documentList');
@@ -384,11 +380,8 @@
 
 
     window.logout = () => {
-      firebase.auth().signOut().then(() => {
-        window.location.href = 'index.html';
-      }).catch((error) => {
-        console.error("Logout Error:", error);
-      });
+      localStorage.removeItem('currentUser');
+      window.location.href = 'login.html';
     };
 
     // --- Inquiries Logic ---
