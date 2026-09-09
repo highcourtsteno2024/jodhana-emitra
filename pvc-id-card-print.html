@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PVC ID Card Print Tool | Jodhana E-Mitra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #4f46e5;
+      --primary-hover: #4338ca;
+      --bg: #f3f4f6;
+      --panel-bg: #ffffff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Header */
+    header { background: var(--panel-bg); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .back-btn { text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+    .tool-title { display: flex; align-items: center; gap: 10px; }
+    .tool-icon { background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .tool-title h1 { font-size: 1.2rem; margin: 0; }
+    .tool-title p { font-size: 0.75rem; color: #6b7280; margin: 0; }
+    .badge { background: #dcfce7; color: #166534; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    
+    /* Layout */
+    .main-container { display: flex; flex: 1; overflow: hidden; }
+    
+    /* Sidebars */
+    .sidebar { width: 300px; background: var(--panel-bg); display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid var(--border); }
+    .sidebar.right { border-right: none; border-left: 1px solid var(--border); }
+    .sidebar-section { padding: 20px; border-bottom: 1px solid var(--border); }
+    .section-title { font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px;}
+    
+    /* Controls */
+    .upload-box { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 30px 20px; text-align: center; cursor: pointer; transition: all 0.3s; }
+    .upload-box:hover { border-color: var(--primary); background: #f8fafc; }
+    .upload-box i { font-size: 2rem; color: #94a3b8; margin-bottom: 10px; }
+    
+    .layout-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px; }
+    .layout-btn { border: 1px solid var(--border); background: white; padding: 10px 5px; border-radius: 8px; cursor: pointer; text-align: center; font-size: 0.8rem; transition: 0.3s; }
+    .layout-btn.active { border-color: var(--primary); color: var(--primary); font-weight: 600; background: #eef2ff; }
+    .layout-btn i { display: block; font-size: 1.2rem; margin-bottom: 5px; }
+    
+    .form-group { margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+    .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; outline: none; }
+    
+    .slider-group { margin-bottom: 15px; }
+    .slider-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: #475569; text-transform: uppercase; }
+    .slider-value { color: var(--primary); }
+    input[type=range] { width: 100%; accent-color: var(--primary); }
+    
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; }
+    
+    .toggle-group { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; font-size: 0.75rem; font-weight: 600; color: #475569; text-transform: uppercase; }
+    
+    /* Workspace (Center) */
+    .workspace { flex: 1; display: flex; flex-direction: column; background: #e2e8f0; position: relative; }
+    .toolbar { height: 60px; background: white; display: flex; justify-content: center; align-items: center; gap: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 10; }
+    
+    .canvas-container { flex: 1; overflow: auto; padding: 40px; display: flex; justify-content: center; align-items: flex-start; }
+    .paper { background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+    .paper.a4 { width: 210mm; height: 297mm; }
+    
+    .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; color: #64748b; }
+    .empty-state i { font-size: 3rem; color: #cbd5e1; margin-bottom: 15px; }
+    
+    /* Hidden file input */
+    #fileInput { display: none; }
+
+    /* Print Specific Styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; margin: 0; padding: 0; box-shadow: none; width: 210mm; height: 297mm; }
+      @page { size: A4; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <a href="user-dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> BACK TO HOME</a>
+      <div class="tool-title">
+        <div class="tool-icon"><i class="far fa-id-card"></i></div>
+        <div>
+          <h1>PVC ID Card Print Tool</h1>
+          <p>CSC VLE & CYBER CAFE EDITION</p>
+        </div>
+      </div>
+    </div>
+    <div class="badge"><i class="fas fa-circle" style="font-size: 8px;"></i> 100% Client-Side</div>
+  </header>
+
+  <div class="main-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-section">
+        <div class="section-title"><i class="fas fa-file-upload"></i> UPLOAD DOCUMENT</div>
+        <div class="upload-box" onclick="document.getElementById('fileInput').click()">
+          <i class="fas fa-cloud-upload-alt"></i>
+          <h4 style="margin-bottom: 5px;">Click or Drag Files</h4>
+          <p style="font-size: 0.75rem; color: #64748b;">Aadhar, PAN, Voter, etc.</p>
+          <input type="file" id="fileInput" accept="image/*,application/pdf" multiple>
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="section-title"><i class="fas fa-th-large"></i> LAYOUT & SIZE</div>
+        <div class="layout-grid">
+          <div class="layout-btn active"><i class="far fa-file-alt"></i> A4 Paper</div>
+          <div class="layout-btn"><i class="far fa-image"></i> 4x6 Photo</div>
+          <div class="layout-btn"><i class="far fa-address-card"></i> PVC Card</div>
+        </div>
+        
+        <div class="form-group">
+          <label>PRINT MODE</label>
+          <select>
+            <option>Print All Uploaded (Grid)</option>
+            <option>Single Card Repeat</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label>CROPS PER UPLOAD</label>
+          <select>
+            <option>Front & Back (2 Crops)</option>
+            <option>Single Sided (1 Crop)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Center Workspace -->
+    <div class="workspace">
+      <div class="toolbar">
+        <button class="btn btn-outline" style="width: auto;"><i class="fas fa-file-pdf"></i> PDF Download</button>
+        <button class="btn btn-outline" style="width: auto;"><i class="fas fa-image"></i> Save as Image</button>
+        <button class="btn btn-primary" style="width: auto;" onclick="window.print()"><i class="fas fa-print"></i> Print Now</button>
+      </div>
+      
+      <div class="canvas-container">
+        <div class="paper a4" id="printArea">
+          <div class="empty-state">
+            <i class="fas fa-file-invoice"></i>
+            <h3>No Document Loaded</h3>
+            <p style="font-size: 0.85rem; margin: 10px 0 20px;">Upload a PDF or Image to start generating your ID card print layout.</p>
+            <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()" style="width: 150px; margin: 0 auto;">Browse Files</button>
+          </div>
+          <!-- Images will be injected here via JS -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="sidebar right">
+      <div class="sidebar-section">
+        <div class="section-title"><i class="fas fa-sliders-h"></i> ENHANCEMENTS</div>
+        <button class="btn btn-primary" style="margin-bottom: 20px;"><i class="fas fa-magic"></i> Auto Enhance</button>
+        
+        <div class="toggle-group">
+          <span>SHOW BORDER</span>
+          <input type="checkbox" id="toggle-border" checked style="accent-color: var(--primary);">
+        </div>
+        
+        <div class="slider-group">
+          <div class="slider-header"><span>CORNER CURVE</span><span class="slider-value" id="val-radius">8px</span></div>
+          <input type="range" id="val-radius-input" min="0" max="20" value="8" oninput="document.getElementById('val-radius').innerText = this.value + 'px'">
+        </div>
+        
+        <div class="slider-group">
+          <div class="slider-header"><span>BRIGHTNESS</span><span class="slider-value" id="val-bright">100%</span></div>
+          <input type="range" id="val-bright-input" min="50" max="150" value="100" oninput="document.getElementById('val-bright').innerText = this.value + '%'">
+        </div>
+        
+        <div class="slider-group">
+          <div class="slider-header"><span>CONTRAST</span><span class="slider-value" id="val-cont">100%</span></div>
+          <input type="range" id="val-cont-input" min="50" max="150" value="100" oninput="document.getElementById('val-cont').innerText = this.value + '%'">
+        </div>
+      </div>
+      
+      <div class="sidebar-section">
+        <div class="section-title"><i class="fas fa-arrows-alt"></i> SPACING & MARGINS</div>
+        <div class="slider-group">
+          <div class="slider-header"><span>GAP BETWEEN</span><span class="slider-value" id="val-gap">10px</span></div>
+          <input type="range" id="val-gap-input" min="0" max="30" value="10" oninput="document.getElementById('val-gap').innerText = this.value + 'px'">
+        </div>
+        
+        <div class="slider-group">
+          <div class="slider-header"><span>TOP MARGIN</span><span class="slider-value" id="val-margin">20px</span></div>
+          <input type="range" id="val-margin-input" min="0" max="50" value="20" oninput="document.getElementById('val-margin').innerText = this.value + 'px'">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const fileInput = document.getElementById('fileInput');
+    const printArea = document.getElementById('printArea');
+    const emptyState = document.querySelector('.empty-state');
+    
+    // Controls
+    const toggleBorder = document.getElementById('toggle-border');
+    const radiusSlider = document.getElementById('val-radius-input');
+    const brightSlider = document.getElementById('val-bright-input');
+    const contSlider = document.getElementById('val-cont-input');
+    const gapSlider = document.getElementById('val-gap-input');
+    const marginSlider = document.getElementById('val-margin-input');
+    
+    // State
+    let uploadedImages = [];
+    
+    // File Upload Handler
+    fileInput.addEventListener('change', function(e) {
+      const files = e.target.files;
+      if(files.length > 0) {
+        emptyState.style.display = 'none';
+        
+        Array.from(files).forEach(file => {
+          if(!file.type.startsWith('image/')) return;
+          
+          const reader = new FileReader();
+          reader.onload = function(event) {
+            uploadedImages.push(event.target.result);
+            renderCanvas();
+          };
+          reader.readAsDataURL(file);
+        });
+      }
+    });
+    
+    // Render Canvas
+    function renderCanvas() {
+      // Clear existing images (keep empty state hidden)
+      const existingCards = printArea.querySelectorAll('.id-card-wrapper');
+      existingCards.forEach(c => c.remove());
+      
+      const gap = gapSlider.value + 'px';
+      const margin = marginSlider.value + 'px';
+      
+      printArea.style.padding = margin;
+      printArea.style.display = 'flex';
+      printArea.style.flexWrap = 'wrap';
+      printArea.style.gap = gap;
+      printArea.style.alignContent = 'flex-start';
+      
+      uploadedImages.forEach(src => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'id-card-wrapper';
+        // Standard ID card size: 85.6mm x 54mm (landscape) or 54mm x 85.6mm (portrait)
+        // Let's assume standard Aadhar/PAN portrait size roughly 54mm x 85mm
+        wrapper.style.width = '85mm';
+        wrapper.style.height = '54mm';
+        wrapper.style.overflow = 'hidden';
+        wrapper.style.boxSizing = 'border-box';
+        
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.width = '100%';
+        img.style.height = '100%';
+        img.style.objectFit = 'fill';
+        
+        wrapper.appendChild(img);
+        printArea.appendChild(wrapper);
+      });
+      
+      applyEnhancements();
+    }
+    
+    // Apply Enhancements
+    function applyEnhancements() {
+      const cards = printArea.querySelectorAll('.id-card-wrapper');
+      const imgs = printArea.querySelectorAll('.id-card-wrapper img');
+      
+      const showBorder = toggleBorder.checked;
+      const radius = radiusSlider.value + 'px';
+      const brightness = brightSlider.value + '%';
+      const contrast = contSlider.value + '%';
+      
+      cards.forEach(card => {
+        card.style.border = showBorder ? '1px solid #000' : 'none';
+        card.style.borderRadius = radius;
+      });
+      
+      imgs.forEach(img => {
+        img.style.filter = `brightness(${brightness}) contrast(${contrast})`;
+      });
+    }
+    
+    // Event Listeners for Sliders
+    toggleBorder.addEventListener('change', applyEnhancements);
+    
+    radiusSlider.addEventListener('input', function() {
+      document.getElementById('val-radius').innerText = this.value + 'px';
+      applyEnhancements();
+    });
+    
+    brightSlider.addEventListener('input', function() {
+      document.getElementById('val-bright').innerText = this.value + '%';
+      applyEnhancements();
+    });
+    
+    contSlider.addEventListener('input', function() {
+      document.getElementById('val-cont').innerText = this.value + '%';
+      applyEnhancements();
+    });
+    
+    gapSlider.addEventListener('input', function() {
+      document.getElementById('val-gap').innerText = this.value + 'px';
+      renderCanvas();
+    });
+    
+    marginSlider.addEventListener('input', function() {
+      document.getElementById('val-margin').innerText = this.value + 'px';
+      renderCanvas();
+    });
+    
+  </script>
+</body>
+</html>
