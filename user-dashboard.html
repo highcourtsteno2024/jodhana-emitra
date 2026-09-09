@@ -318,9 +318,7 @@
         try {
           // Delete from Firestore
           await db.collection('documents').doc(docId).delete();
-          // Delete from Storage
-          const fileRef = storage.ref(`documents/${currentUser.email}/${fileName}`);
-          await fileRef.delete();
+          // Delete from Storage (Bypassed since we use Cloudinary Unsigned)
           renderDocs();
         } catch(err) {
           console.error(err);
@@ -343,10 +341,24 @@
       submitBtn.disabled = true;
 
       try {
-        // Upload to Firebase Storage
-        const fileRef = storage.ref(`documents/${currentUser.email}/${file.name}`);
-        const snapshot = await fileRef.put(file);
-        const downloadURL = await snapshot.ref.getDownloadURL();
+        // Upload to Cloudinary
+        const cloudName = 'nthxrovr';
+        const uploadPreset = 'l1xsa7u0';
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', uploadPreset);
+        
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/auto/upload`, {
+            method: 'POST',
+            body: formData
+        });
+        
+        const data = await response.json();
+        if (!response.ok) {
+            throw new Error(data.error ? data.error.message : 'Upload failed');
+        }
+        const downloadURL = data.secure_url;
 
         // Save reference to Firestore
         await db.collection('documents').add({
@@ -369,6 +381,15 @@
         submitBtn.disabled = false;
       }
     });
+
+
+    window.logout = () => {
+      firebase.auth().signOut().then(() => {
+        window.location.href = 'index.html';
+      }).catch((error) => {
+        console.error("Logout Error:", error);
+      });
+    };
 
     // --- Inquiries Logic ---
     const inquiryList = document.getElementById('inquiryList');
