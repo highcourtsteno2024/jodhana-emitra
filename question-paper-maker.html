@@ -209,21 +209,31 @@
 
   <!-- Bulk Import Modal -->
   <div class="modal-overlay" id="bulkModal">
-    <div class="modal">
+    <div class="modal" style="width: 900px;">
       <h2>Bulk Import from Word / Text</h2>
-      <p>Paste your questions below. The system will automatically detect questions (starting with 1., 2.) and options (a., b., A), B)).</p>
-      <textarea id="bulkText" placeholder="Example:
+      <p>Paste English questions in the left box and Hindi questions in the right box. Ensure the order matches!</p>
+      
+      <div style="display: flex; gap: 15px;">
+        <div style="flex: 1;">
+          <label style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; display: block;">English Text</label>
+          <textarea id="bulkTextEng" placeholder="Example:
 1. What is the capital of India?
 a. Mumbai
 b. New Delhi
 c. Kolkata
-d. Chennai
-
-2. Who wrote the national anthem?
-a. Bankim Chandra
-b. Rabindranath Tagore
-c. Sarojini Naidu
-d. Mahatma Gandhi"></textarea>
+d. Chennai"></textarea>
+        </div>
+        <div style="flex: 1;">
+          <label style="font-weight: 600; font-size: 0.85rem; margin-bottom: 5px; display: block;">Hindi Text</label>
+          <textarea id="bulkTextHin" placeholder="उदाहरण:
+1. भारत की राजधानी क्या है?
+a. मुंबई
+b. नई दिल्ली
+c. कोलकाता
+d. चेन्नई"></textarea>
+        </div>
+      </div>
+      
       <div class="modal-actions">
         <button class="btn btn-outline" onclick="closeBulkModal()">Cancel</button>
         <button class="btn btn-primary" onclick="processBulkImport()">Import Questions</button>
@@ -252,18 +262,38 @@ d. Mahatma Gandhi"></textarea>
       
       questions.forEach((q, index) => {
         let html = `<div class="question-block">
-          <div class="question-text">
-            <span style="width: 25px;">${index + 1}.</span>
-            <span>${q.question}</span>
+          <div class="question-text" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+            <div style="display: flex; gap: 5px;">
+              <span style="width: 25px;">${index + 1}.</span>
+              <span>${q.questionEng}</span>
+            </div>
+            <div style="display: flex; gap: 5px;">
+              <span>${q.questionHin ? q.questionHin : ''}</span>
+            </div>
           </div>`;
           
-        if (q.options && q.options.length > 0) {
-          html += `<div class="options-grid">`;
-          q.options.forEach((opt, oIdx) => {
+        if (q.optionsEng && q.optionsEng.length > 0) {
+          html += `<div class="options-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-left: 20px; margin-top: 5px;">`;
+          
+          // Left side: English options
+          html += `<div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
+          q.optionsEng.forEach((opt, oIdx) => {
             const letter = String.fromCharCode(97 + oIdx); // a, b, c, d
             html += `<div>${letter}. ${opt}</div>`;
           });
-          html += `</div>`;
+          html += `</div></div>`;
+          
+          // Right side: Hindi options
+          html += `<div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px;">`;
+          if (q.optionsHin && q.optionsHin.length > 0) {
+            q.optionsHin.forEach((opt, oIdx) => {
+              const letter = String.fromCharCode(97 + oIdx); // a, b, c, d
+              html += `<div>${letter}. ${opt}</div>`;
+            });
+          }
+          html += `</div></div>`;
+          
+          html += `</div>`; // Close outer options-grid
         }
         
         html += `</div>`;
@@ -295,54 +325,79 @@ d. Mahatma Gandhi"></textarea>
       }
     }
 
-    // Bulk Parser Logic
-    function processBulkImport() {
-      const text = document.getElementById('bulkText').value;
-      if (!text.trim()) {
-        alert("Please paste some text first.");
-        return;
-      }
-
+    // Generic Parser
+    function parseTextIntoQuestions(text) {
+      if (!text || !text.trim()) return [];
+      
       const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-      let newQuestions = [];
-      let currentQuestion = null;
+      let parsedList = [];
+      let currentItem = null;
 
-      // Regex patterns
       const questionRegex = /^(\d+[\.\)]|Q\d+[\.\)])\s*(.+)/i; 
       const optionRegex = /^([a-eA-E][\.\)])\s*(.+)/;
-
+      
       for (let i = 0; i < lines.length; i++) {
         let line = lines[i];
         
         let qMatch = line.match(questionRegex);
         if (qMatch) {
-          if (currentQuestion) newQuestions.push(currentQuestion);
-          currentQuestion = {
-            question: qMatch[2],
+          if (currentItem) parsedList.push(currentItem);
+          currentItem = {
+            text: qMatch[2],
             options: []
           };
           continue;
         }
 
         let optMatch = line.match(optionRegex);
-        if (optMatch && currentQuestion) {
-          currentQuestion.options.push(optMatch[2]);
+        if (optMatch && currentItem) {
+          currentItem.options.push(optMatch[2]);
           continue;
         }
 
-        // If it's just text without a number/letter prefix, append to the current question text
-        if (currentQuestion && currentQuestion.options.length === 0) {
-          currentQuestion.question += ' ' + line;
+        if (currentItem && currentItem.options.length === 0) {
+          currentItem.text += ' ' + line;
         }
       }
       
-      if (currentQuestion) newQuestions.push(currentQuestion);
+      if (currentItem) parsedList.push(currentItem);
+      return parsedList;
+    }
+
+    // Bulk Parser Logic
+    function processBulkImport() {
+      const textEng = document.getElementById('bulkTextEng').value;
+      const textHin = document.getElementById('bulkTextHin').value;
+      
+      if (!textEng.trim() && !textHin.trim()) {
+        alert("Please paste some text first.");
+        return;
+      }
+
+      const engParsed = parseTextIntoQuestions(textEng);
+      const hinParsed = parseTextIntoQuestions(textHin);
+      
+      let maxLen = Math.max(engParsed.length, hinParsed.length);
+      let newQuestions = [];
+      
+      for (let i = 0; i < maxLen; i++) {
+        let eObj = engParsed[i] || { text: '', options: [] };
+        let hObj = hinParsed[i] || { text: '', options: [] };
+        
+        newQuestions.push({
+          questionEng: eObj.text,
+          optionsEng: eObj.options,
+          questionHin: hObj.text,
+          optionsHin: hObj.options
+        });
+      }
 
       if(newQuestions.length > 0) {
         questions = [...questions, ...newQuestions];
         updatePaper();
         closeBulkModal();
-        document.getElementById('bulkText').value = ''; // clear
+        document.getElementById('bulkTextEng').value = ''; 
+        document.getElementById('bulkTextHin').value = ''; 
       } else {
         alert("Could not detect any questions. Make sure they start with numbers like '1.' and options with 'a.'");
       }

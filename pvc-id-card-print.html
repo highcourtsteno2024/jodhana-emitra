@@ -327,6 +327,54 @@
       document.getElementById('val-margin').innerText = this.value + 'px';
       renderCanvas();
     });
+
+    // Layout Buttons Logic
+    const layoutBtns = document.querySelectorAll('.layout-btn');
+    layoutBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        layoutBtns.forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Change paper size based on selection
+        if(this.innerText.includes('A4 Paper')) {
+          printArea.style.width = '210mm';
+          printArea.style.height = '297mm';
+        } else if(this.innerText.includes('4x6 Photo')) {
+          printArea.style.width = '4in';
+          printArea.style.height = '6in';
+        } else if(this.innerText.includes('PVC Card')) {
+          printArea.style.width = '86mm';
+          printArea.style.height = '54mm';
+        }
+      });
+    });
+
+    // Auto Enhance Logic
+    const autoEnhanceBtn = document.querySelector('.btn-primary i.fa-magic').parentElement;
+    autoEnhanceBtn.addEventListener('click', function() {
+      brightSlider.value = 110;
+      document.getElementById('val-bright').innerText = '110%';
+      contSlider.value = 120;
+      document.getElementById('val-cont').innerText = '120%';
+      applyEnhancements();
+      
+      // Visual feedback
+      const originalText = this.innerHTML;
+      this.innerHTML = '<i class="fas fa-check"></i> Enhanced!';
+      setTimeout(() => { this.innerHTML = originalText; }, 2000);
+    });
+
+    // PDF & Save Image Logic
+    const pdfBtn = document.querySelector('.btn-outline i.fa-file-pdf').parentElement;
+    const saveImgBtn = document.querySelector('.btn-outline i.fa-image').parentElement;
+
+    pdfBtn.addEventListener('click', function() {
+      alert('PDF Download feature requires a server-side or html2canvas library integration. Please use the "Print Now" button and choose "Save as PDF" in the print dialog for now.');
+    });
+
+    saveImgBtn.addEventListener('click', function() {
+      alert('Save as Image feature requires html2canvas library integration. Please use "Print Now" for the best output.');
+    });
     
   </script>
 </body>
