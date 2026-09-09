@@ -341,7 +341,10 @@ d. चेन्नई"></textarea>
         
         let qMatch = line.match(questionRegex);
         if (qMatch) {
-          if (currentItem) parsedList.push(currentItem);
+          if (currentItem) {
+            extractInlineOptions(currentItem);
+            parsedList.push(currentItem);
+          }
           currentItem = {
             text: qMatch[2],
             options: []
@@ -355,13 +358,43 @@ d. चेन्नई"></textarea>
           continue;
         }
 
-        if (currentItem && currentItem.options.length === 0) {
-          currentItem.text += ' ' + line;
+        if (currentItem) {
+          if (currentItem.options.length > 0) {
+            currentItem.options[currentItem.options.length - 1] += ' ' + line;
+          } else {
+            currentItem.text += ' ' + line;
+          }
         }
       }
       
-      if (currentItem) parsedList.push(currentItem);
+      if (currentItem) {
+        extractInlineOptions(currentItem);
+        parsedList.push(currentItem);
+      }
       return parsedList;
+    }
+
+    function extractInlineOptions(item) {
+      if (item.options.length > 0) return; // Already has options on new lines
+      
+      // Match (a), (b), a., b., a), b) etc.
+      const markerRegex = /\s*(?:\([a-eA-E]\)|[a-eA-E][\.\)])\s+/g;
+      const optionMarkers = [...item.text.matchAll(markerRegex)];
+      
+      if (optionMarkers.length >= 2) {
+        // Validate the first one is an 'A' or 'a' to avoid false positives
+        if (optionMarkers[0][0].toLowerCase().includes('a')) {
+          const firstMarkerIndex = optionMarkers[0].index;
+          const actualQuestion = item.text.substring(0, firstMarkerIndex).trim();
+          
+          for (let i = 0; i < optionMarkers.length; i++) {
+            const start = optionMarkers[i].index + optionMarkers[i][0].length;
+            const end = (i + 1 < optionMarkers.length) ? optionMarkers[i + 1].index : item.text.length;
+            item.options.push(item.text.substring(start, end).trim());
+          }
+          item.text = actualQuestion;
+        }
+      }
     }
 
     // Bulk Parser Logic
