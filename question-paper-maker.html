@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Question Paper Maker | Jodhana E-Mitra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #f59e0b;
+      --primary-hover: #d97706;
+      --bg: #f3f4f6;
+      --panel-bg: #ffffff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Header */
+    header { background: var(--panel-bg); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .back-btn { background: var(--primary); color: white; padding: 6px 15px; border-radius: 20px; text-decoration: none; font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+    .tool-title { display: flex; align-items: center; gap: 10px; }
+    .tool-icon { color: var(--primary); font-size: 1.5rem; }
+    .tool-title h1 { font-size: 1.2rem; margin: 0; }
+    .tool-title p { font-size: 0.75rem; color: #6b7280; margin: 0; }
+    
+    /* Layout */
+    .main-container { display: flex; flex: 1; overflow: hidden; }
+    
+    /* Left Sidebar */
+    .sidebar { width: 350px; background: var(--panel-bg); display: flex; flex-direction: column; border-right: 1px solid var(--border); position: relative; }
+    .sidebar-content { flex: 1; overflow-y: auto; padding: 20px; padding-bottom: 80px; }
+    .form-row { display: flex; gap: 10px; margin-bottom: 15px; }
+    .form-group { flex: 1; margin-bottom: 15px; }
+    .form-group label { display: block; font-size: 0.8rem; font-weight: 600; margin-bottom: 5px; color: #475569; }
+    .form-group input, .form-group select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; outline: none; }
+    
+    .section-header { display: flex; justify-content: space-between; align-items: center; margin: 20px 0 10px; padding-bottom: 5px; border-bottom: 1px solid var(--border); }
+    .section-header h3 { font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    
+    .btn { padding: 6px 12px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; transition: 0.3s; display: inline-flex; align-items: center; gap: 5px; font-size: 0.85rem; }
+    .btn-sm { padding: 4px 8px; font-size: 0.75rem; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; }
+    .btn-success { background: #10b981; color: white; }
+    .btn-blue { background: #3b82f6; color: white; }
+    
+    /* Floating Bottom Bar in Sidebar */
+    .sidebar-footer { position: absolute; bottom: 0; left: 0; width: 100%; padding: 15px 20px; background: var(--panel-bg); border-top: 1px solid var(--border); display: flex; gap: 10px; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.05); }
+    .sidebar-footer .btn { flex: 1; justify-content: center; padding: 10px; }
+    
+    /* Center Workspace */
+    .workspace { flex: 1; background: #e2e8f0; overflow: auto; padding: 40px; display: flex; justify-content: center; align-items: flex-start; }
+    .paper { background: white; width: 210mm; min-height: 297mm; padding: 20mm; box-shadow: 0 4px 10px rgba(0,0,0,0.1); position: relative; }
+    
+    /* Paper Typography */
+    .paper-header { text-align: center; margin-bottom: 15px; border-bottom: 2px solid #000; padding-bottom: 10px; }
+    .school-name { font-size: 1.5rem; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; outline: none; border: 1px dashed transparent; }
+    .school-name:focus { border: 1px dashed #ccc; }
+    .exam-name { font-size: 1.1rem; font-weight: 600; outline: none; }
+    
+    .meta-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; font-size: 0.9rem; font-weight: 600; margin-bottom: 5px; }
+    .meta-row-2 { display: flex; justify-content: space-between; font-size: 0.9rem; font-weight: 600; margin-bottom: 15px; border-bottom: 1px solid #000; padding-bottom: 10px; }
+    
+    .instructions-block { border: 1px solid #000; padding: 10px; margin-bottom: 20px; font-size: 0.85rem; }
+    .instructions-block h4 { margin-bottom: 5px; }
+    
+    .section-title-paper { font-weight: bold; margin: 15px 0 10px; text-decoration: underline; }
+    
+    .question-block { margin-bottom: 15px; font-size: 14px; break-inside: avoid; }
+    .question-text { font-weight: 600; margin-bottom: 5px; display: flex; gap: 5px; }
+    .options-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; padding-left: 20px; }
+    
+    .paper-footer { margin-top: 40px; display: flex; justify-content: space-between; border-top: 1px solid #000; padding-top: 10px; font-size: 0.85rem; font-weight: 600; }
+    
+    /* Modals */
+    .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: none; justify-content: center; align-items: center; z-index: 1000; }
+    .modal { background: white; width: 600px; max-width: 90%; border-radius: 8px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+    .modal h2 { margin-bottom: 10px; font-size: 1.2rem; }
+    .modal p { font-size: 0.9rem; color: #64748b; margin-bottom: 15px; }
+    .modal textarea { width: 100%; height: 250px; padding: 10px; border: 1px solid var(--border); border-radius: 4px; font-size: 0.9rem; resize: vertical; outline: none; }
+    .modal-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 15px; }
+    
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; margin: 0; padding: 0; box-shadow: none; width: 210mm; min-height: 297mm; }
+      @page { size: A4; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="tool-title">
+      <div class="tool-icon"><i class="fas fa-file-alt"></i></div>
+      <div>
+        <h1>Exam Question Paper Maker</h1>
+        <p>MCQ + Descriptive | Auto Bulk Import | Free</p>
+      </div>
+    </div>
+    <div class="header-right">
+      <a href="user-dashboard.html" class="back-btn"><i class="fas fa-home"></i> Back to Home</a>
+    </div>
+  </header>
+
+  <div class="main-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-content">
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Subject</label>
+            <input type="text" id="inpSubject" value="Mathematics" oninput="updatePaper()">
+          </div>
+          <div class="form-group">
+            <label>Time</label>
+            <input type="text" id="inpTime" value="3 Hours" oninput="updatePaper()">
+          </div>
+        </div>
+        
+        <div class="form-row">
+          <div class="form-group">
+            <label>Total Marks</label>
+            <input type="text" id="inpMarks" value="100" oninput="updatePaper()">
+          </div>
+          <div class="form-group">
+            <label>Class</label>
+            <input type="text" id="inpClass" value="10th" oninput="updatePaper()">
+          </div>
+        </div>
+        
+        <div class="form-group" style="display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 10px; border-radius: 6px;">
+          <div>
+            <label style="margin:0;">General Instructions</label>
+            <span style="font-size:0.7rem; color:#64748b;">Show/Hide in preview</span>
+          </div>
+          <input type="checkbox" id="inpInstr" checked onchange="updatePaper()">
+        </div>
+        
+        <!-- Questions Section -->
+        <div class="section-header">
+          <h3><i class="fas fa-list-ol"></i> Questions</h3>
+          <button class="btn btn-primary btn-sm" onclick="openBulkModal()"><i class="fas fa-paste"></i> Bulk Import</button>
+        </div>
+        
+        <div id="editorQuestionsList" style="margin-bottom: 20px;">
+          <p style="font-size: 0.8rem; color: #64748b; text-align: center; margin: 20px 0;">No questions added yet. Click Bulk Import to paste from Word.</p>
+        </div>
+        
+      </div>
+      
+      <!-- Bottom Actions -->
+      <div class="sidebar-footer">
+        <button class="btn btn-blue" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+        <button class="btn btn-success" onclick="window.print()"><i class="fas fa-file-pdf"></i> Save PDF</button>
+        <button class="btn btn-outline" onclick="clearAll()"><i class="fas fa-trash"></i> Clear</button>
+      </div>
+    </div>
+
+    <!-- Center Workspace -->
+    <div class="workspace">
+      <div class="paper" id="printArea">
+        <div class="paper-header">
+          <div class="school-name" contenteditable="true">SMART PUBLIC SCHOOL</div>
+          <div class="exam-name" contenteditable="true">Annual Examination 2026</div>
+        </div>
+        
+        <div class="meta-grid">
+          <div>Class: <span id="outClass">10th</span></div>
+          <div style="text-align: center;">Subject: <span id="outSubject">Mathematics</span></div>
+          <div style="text-align: right;">Time: <span id="outTime">3 Hours</span></div>
+        </div>
+        
+        <div class="meta-row-2">
+          <div>Roll No.: _______________</div>
+          <div>Max Marks: <span id="outMarks">100</span></div>
+        </div>
+        
+        <div class="instructions-block" id="outInstr">
+          <h4>GENERAL INSTRUCTIONS:</h4>
+          <ol style="padding-left: 20px; margin: 0;">
+            <li>All questions are compulsory.</li>
+            <li>Marks for each question are indicated against it.</li>
+            <li>Write your answers neatly.</li>
+          </ol>
+        </div>
+        
+        <div class="section-title-paper">SECTION - A (Questions)</div>
+        
+        <div id="paperQuestionsContainer">
+          <!-- Questions injected here -->
+        </div>
+        
+        <div class="paper-footer">
+          <div>Total Questions: <span id="outTotalQ">0</span></div>
+          <div>Signature: _________________</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bulk Import Modal -->
+  <div class="modal-overlay" id="bulkModal">
+    <div class="modal">
+      <h2>Bulk Import from Word / Text</h2>
+      <p>Paste your questions below. The system will automatically detect questions (starting with 1., 2.) and options (a., b., A), B)).</p>
+      <textarea id="bulkText" placeholder="Example:
+1. What is the capital of India?
+a. Mumbai
+b. New Delhi
+c. Kolkata
+d. Chennai
+
+2. Who wrote the national anthem?
+a. Bankim Chandra
+b. Rabindranath Tagore
+c. Sarojini Naidu
+d. Mahatma Gandhi"></textarea>
+      <div class="modal-actions">
+        <button class="btn btn-outline" onclick="closeBulkModal()">Cancel</button>
+        <button class="btn btn-primary" onclick="processBulkImport()">Import Questions</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let questions = [];
+
+    function updatePaper() {
+      document.getElementById('outSubject').innerText = document.getElementById('inpSubject').value;
+      document.getElementById('outTime').innerText = document.getElementById('inpTime').value;
+      document.getElementById('outMarks').innerText = document.getElementById('inpMarks').value;
+      document.getElementById('outClass').innerText = document.getElementById('inpClass').value;
+      
+      document.getElementById('outInstr').style.display = document.getElementById('inpInstr').checked ? 'block' : 'none';
+      document.getElementById('outTotalQ').innerText = questions.length;
+      
+      renderPaperQuestions();
+    }
+
+    function renderPaperQuestions() {
+      const container = document.getElementById('paperQuestionsContainer');
+      container.innerHTML = '';
+      
+      questions.forEach((q, index) => {
+        let html = `<div class="question-block">
+          <div class="question-text">
+            <span style="width: 25px;">${index + 1}.</span>
+            <span>${q.question}</span>
+          </div>`;
+          
+        if (q.options && q.options.length > 0) {
+          html += `<div class="options-grid">`;
+          q.options.forEach((opt, oIdx) => {
+            const letter = String.fromCharCode(97 + oIdx); // a, b, c, d
+            html += `<div>${letter}. ${opt}</div>`;
+          });
+          html += `</div>`;
+        }
+        
+        html += `</div>`;
+        container.innerHTML += html;
+      });
+      
+      // Update Editor List too
+      const editorList = document.getElementById('editorQuestionsList');
+      if(questions.length === 0) {
+        editorList.innerHTML = '<p style="font-size: 0.8rem; color: #64748b; text-align: center; margin: 20px 0;">No questions added yet. Click Bulk Import to paste from Word.</p>';
+      } else {
+        editorList.innerHTML = `<p style="font-size: 0.85rem; font-weight: bold; margin-bottom: 10px;">${questions.length} Questions Loaded</p>`;
+      }
+    }
+
+    // Modal Logic
+    function openBulkModal() {
+      document.getElementById('bulkModal').style.display = 'flex';
+    }
+    
+    function closeBulkModal() {
+      document.getElementById('bulkModal').style.display = 'none';
+    }
+    
+    function clearAll() {
+      if(confirm("Are you sure you want to clear all questions?")) {
+        questions = [];
+        updatePaper();
+      }
+    }
+
+    // Bulk Parser Logic
+    function processBulkImport() {
+      const text = document.getElementById('bulkText').value;
+      if (!text.trim()) {
+        alert("Please paste some text first.");
+        return;
+      }
+
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+      let newQuestions = [];
+      let currentQuestion = null;
+
+      // Regex patterns
+      const questionRegex = /^(\d+[\.\)]|Q\d+[\.\)])\s*(.+)/i; 
+      const optionRegex = /^([a-eA-E][\.\)])\s*(.+)/;
+
+      for (let i = 0; i < lines.length; i++) {
+        let line = lines[i];
+        
+        let qMatch = line.match(questionRegex);
+        if (qMatch) {
+          if (currentQuestion) newQuestions.push(currentQuestion);
+          currentQuestion = {
+            question: qMatch[2],
+            options: []
+          };
+          continue;
+        }
+
+        let optMatch = line.match(optionRegex);
+        if (optMatch && currentQuestion) {
+          currentQuestion.options.push(optMatch[2]);
+          continue;
+        }
+
+        // If it's just text without a number/letter prefix, append to the current question text
+        if (currentQuestion && currentQuestion.options.length === 0) {
+          currentQuestion.question += ' ' + line;
+        }
+      }
+      
+      if (currentQuestion) newQuestions.push(currentQuestion);
+
+      if(newQuestions.length > 0) {
+        questions = [...questions, ...newQuestions];
+        updatePaper();
+        closeBulkModal();
+        document.getElementById('bulkText').value = ''; // clear
+      } else {
+        alert("Could not detect any questions. Make sure they start with numbers like '1.' and options with 'a.'");
+      }
+    }
+
+    // Initialize
+    updatePaper();
+  </script>
+</body>
+</html>
