@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Govt ID Card Print | Jodhana E-Mitra</title>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root {
+      --primary: #0284c7; /* Blue for Govt ID */
+      --primary-hover: #0369a1;
+      --bg: #f3f4f6;
+      --panel-bg: #ffffff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Outfit', sans-serif; }
+    body { background-color: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+    
+    /* Header */
+    header { background: var(--panel-bg); border-bottom: 1px solid var(--border); padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; }
+    .header-left { display: flex; align-items: center; gap: 20px; }
+    .back-btn { text-decoration: none; color: var(--text); font-weight: 600; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; }
+    .tool-title { display: flex; align-items: center; gap: 10px; }
+    .tool-icon { background: var(--primary); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+    .tool-title h1 { font-size: 1.2rem; margin: 0; }
+    .tool-title p { font-size: 0.75rem; color: #6b7280; margin: 0; }
+    .badge { background: #d0f2ff; color: #0369a1; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; font-weight: 600; display: flex; align-items: center; gap: 5px; }
+    
+    /* Layout */
+    .main-container { display: flex; flex: 1; overflow: hidden; }
+    
+    /* Left Sidebar */
+    .sidebar { width: 320px; background: var(--panel-bg); display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid var(--border); padding: 20px; }
+    
+    .section-title { font-size: 0.8rem; font-weight: 700; color: var(--primary); text-transform: uppercase; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; letter-spacing: 1px;}
+    
+    .upload-box { border: 2px dashed #cbd5e1; border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; margin-bottom: 15px; background: #f8fafc; }
+    .upload-box:hover { border-color: var(--primary); background: #f0f9ff; }
+    .upload-box i { font-size: 1.5rem; color: var(--primary); margin-bottom: 10px; }
+    .upload-box h4 { font-size: 0.95rem; margin-bottom: 5px; }
+    .upload-box p { font-size: 0.75rem; color: #64748b; }
+    
+    .btn { width: 100%; padding: 10px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; transition: 0.3s; }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-outline { background: white; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f8fafc; }
+    
+    /* Sliders */
+    .slider-group { margin-bottom: 15px; }
+    .slider-header { display: flex; justify-content: space-between; font-size: 0.75rem; font-weight: 600; margin-bottom: 5px; color: #475569; text-transform: uppercase; }
+    .slider-value { color: var(--primary); }
+    input[type=range] { width: 100%; accent-color: var(--primary); }
+    
+    /* Workspace (Center) */
+    .workspace { flex: 1; display: flex; flex-direction: column; background: #e2e8f0; position: relative; }
+    .toolbar { height: 60px; background: white; display: flex; justify-content: center; align-items: center; gap: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); z-index: 10; }
+    
+    .canvas-container { flex: 1; overflow: auto; padding: 40px; display: flex; justify-content: center; align-items: flex-start; }
+    .paper { background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); position: relative; width: 210mm; height: 297mm; padding: 20mm; display: flex; flex-direction: column; align-items: center; gap: 10mm; }
+    
+    .pvc-card { width: 85.6mm; height: 54mm; border: 1px dashed #ccc; border-radius: 4px; display: flex; justify-content: center; align-items: center; color: #94a3b8; font-size: 0.9rem; overflow: hidden; position: relative; }
+    .pvc-card img { width: 100%; height: 100%; object-fit: fill; display: none; }
+    
+    .empty-text { position: absolute; text-align: center; }
+
+    /* Hidden file inputs */
+    #frontInput, #backInput { display: none; }
+
+    /* Print Specific Styles */
+    @media print {
+      body * { visibility: hidden; }
+      #printArea, #printArea * { visibility: visible; }
+      #printArea { position: absolute; left: 0; top: 0; margin: 0; padding: 20mm; box-shadow: none; width: 210mm; height: 297mm; border: none; }
+      .pvc-card { border: none; } /* Remove dashed border on print if it's filled, but let's keep it clean */
+      @page { size: A4; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-left">
+      <a href="user-dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i> BACK TO HOME</a>
+      <div class="tool-title">
+        <div class="tool-icon"><i class="fas fa-id-badge"></i></div>
+        <div>
+          <h1>Govt ID Card Print</h1>
+          <p>Aadhar, PAN, Voter ID PVC Size Formatting</p>
+        </div>
+      </div>
+    </div>
+    <div class="badge"><i class="fas fa-shield-alt"></i> 100% Safe & Offline</div>
+  </header>
+
+  <div class="main-container">
+    <!-- Left Sidebar -->
+    <div class="sidebar">
+      <div class="section-title"><i class="fas fa-file-upload"></i> UPLOAD IMAGES</div>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 15px;">Upload the Front and Back images of the document. They will be automatically resized to exactly 85.6mm x 54mm (Standard PVC Size).</p>
+      
+      <div class="upload-box" onclick="document.getElementById('frontInput').click()">
+        <i class="far fa-image"></i>
+        <h4>Upload Front Side</h4>
+        <p>Click here to select front image</p>
+        <input type="file" id="frontInput" accept="image/*">
+      </div>
+      
+      <div class="upload-box" onclick="document.getElementById('backInput').click()">
+        <i class="far fa-image"></i>
+        <h4>Upload Back Side</h4>
+        <p>Click here to select back image</p>
+        <input type="file" id="backInput" accept="image/*">
+      </div>
+      
+      <div style="margin: 20px 0; border-bottom: 1px solid var(--border);"></div>
+      
+      <div class="section-title"><i class="fas fa-sliders-h"></i> ENHANCEMENTS</div>
+      <p style="font-size: 0.8rem; color: #64748b; margin-bottom: 15px;">Adjust the clarity of the ID card for better printing.</p>
+      
+      <div class="slider-group">
+        <div class="slider-header"><span>BRIGHTNESS</span><span class="slider-value" id="val-bright">100%</span></div>
+        <input type="range" id="val-bright-input" min="50" max="150" value="100">
+      </div>
+      
+      <div class="slider-group">
+        <div class="slider-header"><span>CONTRAST</span><span class="slider-value" id="val-cont">100%</span></div>
+        <input type="range" id="val-cont-input" min="50" max="150" value="100">
+      </div>
+      
+      <button class="btn btn-primary" style="margin-top: 10px;" id="autoEnhanceBtn"><i class="fas fa-magic"></i> Auto Enhance</button>
+      
+      <div style="margin: 20px 0; border-bottom: 1px solid var(--border);"></div>
+      
+      <button class="btn btn-outline" onclick="clearAll()"><i class="fas fa-trash"></i> Clear All</button>
+    </div>
+
+    <!-- Center Workspace -->
+    <div class="workspace">
+      <div class="toolbar">
+        <button class="btn btn-outline" style="width: auto;" onclick="alert('Please use the Print Now button and select Save as PDF.')"><i class="fas fa-file-pdf"></i> Save as PDF</button>
+        <button class="btn btn-primary" style="width: auto;" onclick="window.print()"><i class="fas fa-print"></i> Print Now</button>
+      </div>
+      
+      <div class="canvas-container">
+        <div class="paper" id="printArea">
+          <!-- Front Card -->
+          <div class="pvc-card" id="cardFrontContainer">
+            <div class="empty-text">Front Side<br><span style="font-size: 0.75rem;">(85.6 x 54 mm)</span></div>
+            <img id="cardFrontImg" src="" alt="Front Card">
+          </div>
+          
+          <!-- Back Card -->
+          <div class="pvc-card" id="cardBackContainer">
+            <div class="empty-text">Back Side<br><span style="font-size: 0.75rem;">(85.6 x 54 mm)</span></div>
+            <img id="cardBackImg" src="" alt="Back Card">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Elements
+    const frontInput = document.getElementById('frontInput');
+    const backInput = document.getElementById('backInput');
+    const cardFrontImg = document.getElementById('cardFrontImg');
+    const cardBackImg = document.getElementById('cardBackImg');
+    
+    const brightSlider = document.getElementById('val-bright-input');
+    const contSlider = document.getElementById('val-cont-input');
+    
+    // File Handlers
+    frontInput.addEventListener('change', function(e) {
+      if(e.target.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          cardFrontImg.src = event.target.result;
+          cardFrontImg.style.display = 'block';
+          cardFrontImg.previousElementSibling.style.display = 'none'; // hide empty text
+          document.getElementById('cardFrontContainer').style.border = 'none';
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+    
+    backInput.addEventListener('change', function(e) {
+      if(e.target.files.length > 0) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+          cardBackImg.src = event.target.result;
+          cardBackImg.style.display = 'block';
+          cardBackImg.previousElementSibling.style.display = 'none'; // hide empty text
+          document.getElementById('cardBackContainer').style.border = 'none';
+        };
+        reader.readAsDataURL(e.target.files[0]);
+      }
+    });
+    
+    // Enhancements
+    function applyFilters() {
+      const brightness = brightSlider.value + '%';
+      const contrast = contSlider.value + '%';
+      const filterStr = `brightness(${brightness}) contrast(${contrast})`;
+      
+      cardFrontImg.style.filter = filterStr;
+      cardBackImg.style.filter = filterStr;
+    }
+    
+    brightSlider.addEventListener('input', function() {
+      document.getElementById('val-bright').innerText = this.value + '%';
+      applyFilters();
+    });
+    
+    contSlider.addEventListener('input', function() {
+      document.getElementById('val-cont').innerText = this.value + '%';
+      applyFilters();
+    });
+    
+    document.getElementById('autoEnhanceBtn').addEventListener('click', function() {
+      brightSlider.value = 110;
+      contSlider.value = 120;
+      document.getElementById('val-bright').innerText = '110%';
+      document.getElementById('val-cont').innerText = '120%';
+      applyFilters();
+    });
+    
+    function clearAll() {
+      if(confirm('Are you sure you want to clear the images?')) {
+        cardFrontImg.src = '';
+        cardFrontImg.style.display = 'none';
+        cardFrontImg.previousElementSibling.style.display = 'block';
+        document.getElementById('cardFrontContainer').style.border = '1px dashed #ccc';
+        
+        cardBackImg.src = '';
+        cardBackImg.style.display = 'none';
+        cardBackImg.previousElementSibling.style.display = 'block';
+        document.getElementById('cardBackContainer').style.border = '1px dashed #ccc';
+        
+        frontInput.value = '';
+        backInput.value = '';
+      }
+    }
+  </script>
+</body>
+</html>
